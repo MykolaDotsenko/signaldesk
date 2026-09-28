@@ -1,4 +1,5 @@
 name: Capture SignalDesk UI
+# refreshed after orbital redesign
 
 on:
   push:
