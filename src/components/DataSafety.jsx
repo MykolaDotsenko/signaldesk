@@ -7,7 +7,7 @@ import {
 } from "../lib/backup";
 import "./DataSafety.css";
 
-export const DataSafety = ({ posts, onRestore }) => {
+export const DataSafety = ({ posts, onRestore, onAudioCue }) => {
   const fileInputRef = useRef(null);
   const [pendingRestore, setPendingRestore] = useState(null);
   const [message, setMessage] = useState(null);
@@ -31,6 +31,7 @@ export const DataSafety = ({ posts, onRestore }) => {
       kind: "success",
       text: `Backup exported with ${posts.length} ${posts.length === 1 ? "signal" : "signals"}.`,
     });
+    void onAudioCue?.("confirm");
   };
 
   const handleFileSelection = async (event) => {
@@ -45,6 +46,7 @@ export const DataSafety = ({ posts, onRestore }) => {
         kind: "error",
         text: "That backup is too large to restore safely.",
       });
+      void onAudioCue?.("error");
       return;
     }
 
@@ -61,6 +63,7 @@ export const DataSafety = ({ posts, onRestore }) => {
         kind: "error",
         text: error instanceof Error ? error.message : "Could not read that backup.",
       });
+      void onAudioCue?.("error");
     }
   };
 
