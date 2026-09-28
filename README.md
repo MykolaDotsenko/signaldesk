@@ -6,6 +6,12 @@
 
 ![SignalDesk desktop workspace](./docs/screenshots/signaldesk-desktop.png)
 
+### Interface direction
+
+The current UI treats the notebook as a **starship bridge archive console**: telemetry-style panels, a physical command-deck frame and optional synthesized interface audio. The theme changes presentation and feedback, not the data model — notes, search, backup/restore and local persistence still work as ordinary browser application features.
+
+Audio can be disabled; critical state is never communicated by sound alone.
+
 ```text
 capture → tag → pin → search → revisit
 ```
