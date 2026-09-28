@@ -9,8 +9,12 @@ const clampVolume = (value) => Math.min(0.7, Math.max(0, Number(value) || 0));
 const readSavedVolume = () => {
   if (typeof window === "undefined") return 0.34;
 
-  const stored = Number(window.localStorage.getItem(VOLUME_KEY));
-  return Number.isFinite(stored) ? clampVolume(stored) : 0.34;
+  try {
+    const stored = Number(window.localStorage.getItem(VOLUME_KEY));
+    return Number.isFinite(stored) ? clampVolume(stored) : 0.34;
+  } catch {
+    return 0.34;
+  }
 };
 
 const safeStop = (node) => {
@@ -246,7 +250,11 @@ export const useShipAudio = () => {
       setModeState(normalizedMode);
 
       if (typeof window !== "undefined") {
-        window.localStorage.setItem(LAST_MODE_KEY, normalizedMode);
+        try {
+          window.localStorage.setItem(LAST_MODE_KEY, normalizedMode);
+        } catch {
+          // Audio preferences are optional; blocked storage must not break playback.
+        }
       }
 
       if (normalizedMode === "off") return;
@@ -284,7 +292,11 @@ export const useShipAudio = () => {
     }
 
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(VOLUME_KEY, String(normalized));
+      try {
+        window.localStorage.setItem(VOLUME_KEY, String(normalized));
+      } catch {
+        // Volume still applies for the current session.
+      }
     }
   }, []);
 
