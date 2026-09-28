@@ -5,7 +5,7 @@ const MODE_LABELS = {
 };
 
 export const AudioConsole = ({ mode, volume, onModeChange, onVolumeChange }) => (
-  <details className="audio-console">
+  <details className="audio-console" data-mode={mode}>
     <summary aria-label={`Audio controls. Current mode: ${MODE_LABELS[mode]}`}>
       <span className="audio-console-indicator" aria-hidden="true" />
       <span className="audio-console-label">AUDIO</span>
