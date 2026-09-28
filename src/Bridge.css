@@ -1,0 +1,903 @@
+
+/* Starship bridge layer
+   Keeps SignalDesk readable while giving the workspace a physical command-deck structure. */
+
+.bridge-hull {
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  z-index: -1;
+  width: clamp(22px, 4vw, 58px);
+  pointer-events: none;
+  opacity: .78;
+  background:
+    linear-gradient(180deg, rgba(153, 199, 210, .12), transparent 7rem),
+    linear-gradient(90deg, #0b1218, #121d25 54%, #080d12);
+  box-shadow:
+    inset 0 0 0 1px rgba(137, 212, 229, .11),
+    inset 0 0 30px rgba(0, 0, 0, .55);
+}
+
+.bridge-hull::before,
+.bridge-hull::after {
+  position: absolute;
+  content: "";
+  background: rgba(99, 230, 255, .18);
+}
+
+.bridge-hull::before {
+  top: 10%;
+  width: 1px;
+  height: 72%;
+}
+
+.bridge-hull::after {
+  top: 22%;
+  width: 9px;
+  height: 2px;
+  box-shadow:
+    0 95px rgba(169, 151, 255, .18),
+    0 190px rgba(255, 203, 112, .16),
+    0 285px rgba(113, 240, 195, .14);
+}
+
+.bridge-hull-left {
+  left: 0;
+  clip-path: polygon(0 0, 100% 24px, 68% 100%, 0 100%);
+}
+
+.bridge-hull-left::before {
+  right: 11px;
+}
+
+.bridge-hull-left::after {
+  right: 8px;
+}
+
+.bridge-hull-right {
+  right: 0;
+  clip-path: polygon(0 24px, 100% 0, 100% 100%, 32% 100%);
+}
+
+.bridge-hull-right::before {
+  left: 11px;
+}
+
+.bridge-hull-right::after {
+  left: 8px;
+}
+
+/* Header / bridge rail */
+
+.topbar {
+  border-right: 1px solid rgba(99, 230, 255, .08);
+  border-left: 1px solid rgba(99, 230, 255, .08);
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, .28),
+    inset 0 -1px rgba(99, 230, 255, .04);
+}
+
+.topbar-actions {
+  position: relative;
+}
+
+.topbar-actions::before {
+  content: "BRIDGE / SD-01";
+  position: absolute;
+  top: -13px;
+  right: 0;
+  color: rgba(159, 241, 255, .42);
+  font: 650 .49rem/1 var(--mono);
+  letter-spacing: .16em;
+  white-space: nowrap;
+}
+
+/* Real viewport rather than a generic hero */
+
+.bridge-viewport.hero {
+  position: relative;
+  isolation: isolate;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 34px;
+  min-height: 510px;
+  overflow: hidden;
+  padding: clamp(38px, 5vw, 64px);
+  border: 1px solid rgba(131, 215, 233, .25);
+  border-top-color: rgba(159, 241, 255, .46);
+  border-bottom-color: rgba(169, 151, 255, .30);
+  background:
+    linear-gradient(180deg, rgba(5, 11, 17, .16), rgba(4, 9, 14, .66)),
+    #050a10;
+  box-shadow:
+    inset 0 0 0 8px rgba(7, 16, 24, .76),
+    inset 0 0 0 9px rgba(99, 230, 255, .035),
+    0 30px 90px rgba(0, 0, 0, .42);
+  clip-path: polygon(
+    26px 0,
+    calc(100% - 26px) 0,
+    100% 26px,
+    100% calc(100% - 34px),
+    calc(100% - 34px) 100%,
+    34px 100%,
+    0 calc(100% - 34px),
+    0 26px
+  );
+}
+
+.bridge-viewport.hero::before {
+  top: 12px;
+  left: 12px;
+  width: 38px;
+  height: 8px;
+  border: 0;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--cyan) 0 3px,
+      transparent 3px 7px
+    );
+  box-shadow: none;
+  opacity: .5;
+}
+
+.bridge-viewport.hero::after {
+  right: 14px;
+  bottom: 13px;
+  width: 78px;
+  height: 5px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--violet) 0 3px,
+      transparent 3px 8px
+    );
+  box-shadow: none;
+  opacity: .42;
+}
+
+.viewport-space {
+  position: absolute;
+  inset: 9px;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(153, 184, 255, .14) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 14% 28%, rgba(255, 255, 255, .34) 0 1px, transparent 1.3px),
+    radial-gradient(circle at 56% 48%, rgba(99, 230, 255, .26) 0 1px, transparent 1.4px),
+    radial-gradient(circle at 86% 73%, rgba(255, 203, 112, .22) 0 1px, transparent 1.5px),
+    linear-gradient(180deg, #02050a 0%, #050b12 68%, #07111a 100%);
+  background-size:
+    147px 147px,
+    211px 211px,
+    277px 277px,
+    347px 347px,
+    auto;
+}
+
+.viewport-space::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: .33;
+  background:
+    linear-gradient(rgba(99, 230, 255, .025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 230, 255, .025) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(circle at 62% 48%, black, transparent 76%);
+}
+
+.viewport-space::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 36%;
+  content: "";
+  opacity: .6;
+  background: linear-gradient(180deg, rgba(92, 160, 205, .06), transparent);
+}
+
+.planet-limb {
+  position: absolute;
+  right: -7%;
+  bottom: -48%;
+  width: min(720px, 63vw);
+  aspect-ratio: 1.8;
+  border: 1px solid rgba(99, 230, 255, .34);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      ellipse at 50% 18%,
+      rgba(35, 85, 111, .26),
+      rgba(10, 31, 45, .87) 42%,
+      #03080e 68%
+    );
+  box-shadow:
+    0 -5px 18px rgba(99, 230, 255, .14),
+    0 -34px 110px rgba(72, 172, 219, .08);
+  transform: rotate(-5deg);
+}
+
+.planet-limb::after {
+  position: absolute;
+  inset: 8% 4%;
+  content: "";
+  border-top: 1px solid rgba(159, 241, 255, .14);
+  border-radius: 50%;
+}
+
+.flight-path {
+  position: absolute;
+  border-top: 1px solid rgba(99, 230, 255, .17);
+  border-radius: 50%;
+}
+
+.flight-path-one {
+  top: 25%;
+  right: 12%;
+  width: 420px;
+  height: 160px;
+  transform: rotate(-9deg);
+}
+
+.flight-path-two {
+  top: 39%;
+  right: 4%;
+  width: 520px;
+  height: 210px;
+  border-color: rgba(169, 151, 255, .13);
+  transform: rotate(14deg);
+}
+
+.viewport-reticle {
+  position: absolute;
+  top: 25%;
+  right: 22%;
+  width: 104px;
+  height: 104px;
+  border: 1px solid rgba(99, 230, 255, .14);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 19px rgba(99, 230, 255, .012),
+    0 0 28px rgba(99, 230, 255, .025);
+}
+
+.viewport-reticle::before,
+.viewport-reticle::after {
+  position: absolute;
+  content: "";
+  background: rgba(99, 230, 255, .22);
+}
+
+.viewport-reticle::before {
+  top: 50%;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: 1px;
+}
+
+.viewport-reticle::after {
+  top: -20px;
+  left: 50%;
+  width: 1px;
+  height: calc(100% + 40px);
+}
+
+.distant-object {
+  position: absolute;
+  top: 19%;
+  right: 27%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d9fbff;
+  box-shadow:
+    0 0 7px #d9fbff,
+    0 0 24px rgba(99, 230, 255, .8);
+}
+
+.hero-main,
+.bridge-telemetry {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-main {
+  align-self: center;
+  max-width: 820px;
+  padding: 18px 20px 20px;
+  border-left: 2px solid rgba(99, 230, 255, .54);
+  background: linear-gradient(90deg, rgba(3, 9, 14, .78), rgba(3, 9, 14, .16) 72%, transparent);
+}
+
+.hero-main::before {
+  content: "PRIMARY VIEWPORT / ARCHIVE NAV";
+  display: block;
+  margin-bottom: 23px;
+  color: rgba(159, 241, 255, .38);
+  font: 650 .54rem/1 var(--mono);
+  letter-spacing: .18em;
+}
+
+.bridge-viewport .hero-copy {
+  max-width: 660px;
+}
+
+.bridge-telemetry {
+  align-self: stretch;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 17px;
+  min-width: 0;
+  padding: 19px;
+  border: 1px solid rgba(99, 230, 255, .21);
+  border-top-color: rgba(99, 230, 255, .43);
+  background:
+    linear-gradient(180deg, rgba(12, 28, 40, .94), rgba(5, 14, 21, .92));
+  box-shadow:
+    inset 0 0 0 4px rgba(99, 230, 255, .018),
+    0 16px 46px rgba(0, 0, 0, .32);
+  clip-path: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 0 100%);
+}
+
+.bridge-telemetry::before {
+  content: "FLIGHT / TELEMETRY";
+  color: rgba(169, 151, 255, .72);
+  font: 720 .53rem/1 var(--mono);
+  letter-spacing: .15em;
+}
+
+.radar-scope {
+  position: relative;
+  width: min(100%, 158px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid rgba(99, 230, 255, .32);
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(
+      circle,
+      rgba(99, 230, 255, .09) 0 1px,
+      transparent 1px 24px
+    ),
+    linear-gradient(rgba(99, 230, 255, .08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 230, 255, .08) 1px, transparent 1px),
+    radial-gradient(circle, rgba(20, 87, 103, .18), #061118 70%);
+  background-size: auto, 100% 50%, 50% 100%, auto;
+  box-shadow:
+    inset 0 0 26px rgba(99, 230, 255, .08),
+    0 0 24px rgba(99, 230, 255, .04);
+}
+
+.radar-scope::before {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 6px;
+  height: 6px;
+  content: "";
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan);
+  transform: translate(-50%, -50%);
+}
+
+.radar-sweep {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 48%;
+  height: 48%;
+  transform-origin: left top;
+  background:
+    conic-gradient(
+      from 0deg at 0 0,
+      rgba(99, 230, 255, .38),
+      rgba(99, 230, 255, .06) 26deg,
+      transparent 54deg
+    );
+  animation: radar-sweep 5.8s linear infinite;
+}
+
+.radar-contact {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 9px currentColor;
+}
+
+.contact-one {
+  top: 28%;
+  left: 65%;
+  color: var(--mint);
+}
+
+.contact-two {
+  top: 64%;
+  left: 27%;
+  color: var(--amber);
+  background: var(--amber);
+}
+
+.contact-three {
+  top: 72%;
+  left: 69%;
+  color: var(--violet);
+  background: var(--violet);
+}
+
+.bridge-readouts {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.bridge-readouts > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 34px;
+  border-bottom: 1px solid var(--line);
+}
+
+.bridge-readouts dt,
+.bridge-readouts dd {
+  margin: 0;
+  font: 700 .57rem/1 var(--mono);
+  letter-spacing: .08em;
+}
+
+.bridge-readouts dt {
+  color: var(--text-faint);
+}
+
+.bridge-readouts dd {
+  color: var(--cyan-strong);
+}
+
+.bridge-readouts dd.is-nominal {
+  color: var(--mint);
+}
+
+.bridge-readouts dd.is-warning {
+  color: var(--warning);
+}
+
+.bridge-telemetry .hero-shortcuts {
+  align-self: end;
+  display: grid;
+  min-width: 0;
+  padding: 15px 0 0;
+  border-top: 1px dashed var(--line-strong);
+  border-left: 0;
+}
+
+.bridge-telemetry .hero-shortcuts::before {
+  position: static;
+  content: "CONTROL BUS";
+  display: block;
+  margin-bottom: 1px;
+}
+
+/* Audio console */
+
+.audio-console {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.audio-console summary {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  color: var(--text-soft);
+  background: #07121a;
+  cursor: pointer;
+  list-style: none;
+  font: 700 .6rem/1 var(--mono);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.audio-console summary::-webkit-details-marker {
+  display: none;
+}
+
+.audio-console summary:hover,
+.audio-console[open] summary {
+  border-color: rgba(99, 230, 255, .42);
+  color: var(--cyan-strong);
+  background: #0a1821;
+  box-shadow: 0 0 18px rgba(99, 230, 255, .06);
+}
+
+.audio-console-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #52656e;
+}
+
+.audio-console[data-mode="ambient"] .audio-console-indicator,
+.audio-console[data-mode="cinematic"] .audio-console-indicator {
+  background: var(--cyan);
+  box-shadow: 0 0 11px rgba(99, 230, 255, .75);
+}
+
+.audio-console[data-mode="cinematic"] .audio-console-indicator {
+  background: var(--violet);
+  box-shadow: 0 0 11px rgba(169, 151, 255, .75);
+}
+
+.audio-console summary strong {
+  color: inherit;
+  font-size: .59rem;
+}
+
+.audio-console-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 60;
+  width: min(320px, calc(100vw - 24px));
+  padding: 14px;
+  border: 1px solid rgba(99, 230, 255, .28);
+  border-top-color: rgba(99, 230, 255, .56);
+  color: var(--text-soft);
+  background: rgba(5, 14, 21, .985);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, .58),
+    inset 0 0 0 4px rgba(99, 230, 255, .015);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+
+.audio-console-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  font: 720 .66rem/1 var(--mono);
+  text-transform: uppercase;
+}
+
+.audio-console-heading span {
+  color: var(--cyan-strong);
+}
+
+.audio-console-heading small {
+  color: var(--text-faint);
+  font-size: .53rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.audio-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 11px;
+}
+
+.audio-mode-grid button {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  color: var(--text-faint);
+  background: #07111a;
+  font: 700 .58rem/1 var(--mono);
+  text-transform: uppercase;
+}
+
+.audio-mode-grid button:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+  background: #0a1720;
+}
+
+.audio-mode-grid button.is-active {
+  border-color: rgba(99, 230, 255, .58);
+  color: #041217;
+  background: var(--cyan);
+  box-shadow: 0 0 16px rgba(99, 230, 255, .12);
+}
+
+.audio-mode-grid button:nth-child(3).is-active {
+  border-color: rgba(169, 151, 255, .7);
+  color: #0b0718;
+  background: var(--violet-strong);
+  box-shadow: 0 0 18px rgba(169, 151, 255, .16);
+}
+
+.audio-volume {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  margin-top: 12px;
+  color: var(--text-faint);
+  font: 650 .57rem/1 var(--mono);
+  text-transform: uppercase;
+}
+
+.audio-volume input {
+  width: 100%;
+  accent-color: var(--cyan);
+}
+
+.audio-volume output {
+  min-width: 33px;
+  color: var(--cyan-strong);
+  text-align: right;
+}
+
+.audio-console-panel p {
+  margin: 11px 0 0;
+  color: var(--text-faint);
+  font: 580 .58rem/1.5 var(--mono);
+}
+
+/* More hardware-like primary modules */
+
+.stats-strip,
+.data-safety,
+.composer-card,
+.filter-panel,
+.post-card {
+  backdrop-filter: none;
+}
+
+.stats-strip {
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, .36),
+    inset 0 1px rgba(99, 230, 255, .045);
+}
+
+.composer-card {
+  background:
+    linear-gradient(180deg, rgba(15, 31, 43, .96), rgba(7, 17, 25, .98));
+  box-shadow:
+    0 28px 70px rgba(0, 0, 0, .42),
+    inset 0 0 0 4px rgba(99, 230, 255, .015);
+}
+
+.composer-card .card-glow {
+  opacity: .65;
+}
+
+.composer-heading::before {
+  content: "INPUT BUS";
+  position: absolute;
+  right: 0;
+  bottom: 6px;
+  color: rgba(99, 230, 255, .28);
+  font: 650 .48rem/1 var(--mono);
+  letter-spacing: .16em;
+}
+
+.filter-panel {
+  box-shadow:
+    0 22px 60px rgba(0, 0, 0, .32),
+    inset 0 0 0 3px rgba(169, 151, 255, .012);
+}
+
+.post-card {
+  box-shadow:
+    0 20px 46px rgba(0, 0, 0, .28),
+    inset 0 1px rgba(255, 255, 255, .015);
+}
+
+.post-card:hover {
+  box-shadow:
+    0 30px 78px rgba(0, 0, 0, .48),
+    -12px 0 34px color-mix(in srgb, var(--signal) 9%, transparent),
+    inset 0 0 0 1px color-mix(in srgb, var(--signal) 7%, transparent);
+}
+
+.button-primary {
+  letter-spacing: .015em;
+}
+
+/* Responsive bridge */
+
+@media (max-width: 1080px) {
+  .bridge-viewport.hero {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    padding: 40px 32px;
+  }
+
+  .hero-main {
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 980px) {
+  .bridge-viewport.hero {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+
+  .bridge-telemetry {
+    grid-template-columns: 150px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-items: center;
+  }
+
+  .bridge-telemetry::before {
+    grid-column: 1 / -1;
+  }
+
+  .bridge-telemetry .hero-shortcuts {
+    grid-column: 2;
+    align-self: center;
+  }
+
+  .planet-limb {
+    right: -18%;
+    bottom: -36%;
+  }
+}
+
+@media (max-width: 760px) {
+  .bridge-hull {
+    display: none;
+  }
+
+  .topbar-actions::before {
+    display: none;
+  }
+
+  .audio-console-label,
+  .privacy-pill {
+    display: none;
+  }
+
+  .audio-console summary {
+    padding-inline: 8px;
+  }
+
+  .bridge-viewport.hero {
+    min-height: 0;
+    padding: 30px 22px;
+    clip-path: polygon(
+      14px 0,
+      calc(100% - 14px) 0,
+      100% 14px,
+      100% calc(100% - 18px),
+      calc(100% - 18px) 100%,
+      18px 100%,
+      0 calc(100% - 18px),
+      0 14px
+    );
+  }
+
+  .hero-main {
+    padding: 13px 13px 16px;
+  }
+
+  .hero-main::before {
+    margin-bottom: 17px;
+  }
+
+  .bridge-telemetry {
+    grid-template-columns: 118px minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .radar-scope {
+    width: 112px;
+  }
+
+  .planet-limb {
+    width: 640px;
+    right: -50%;
+    bottom: -29%;
+  }
+
+  .viewport-reticle {
+    right: 10%;
+    opacity: .58;
+  }
+}
+
+@media (max-width: 540px) {
+  .topbar-actions {
+    gap: 6px;
+  }
+
+  .audio-console summary strong {
+    display: none;
+  }
+
+  .audio-console-panel {
+    position: fixed;
+    top: 72px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+  }
+
+  .bridge-viewport.hero {
+    padding: 26px 16px;
+  }
+
+  .bridge-telemetry {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .radar-scope {
+    width: 128px;
+  }
+
+  .bridge-telemetry .hero-shortcuts {
+    grid-column: 1;
+  }
+
+  .planet-limb {
+    right: -88%;
+    opacity: .72;
+  }
+
+  .flight-path,
+  .viewport-reticle {
+    opacity: .42;
+  }
+}
+
+@media (forced-colors: active) {
+  .bridge-hull,
+  .viewport-space,
+  .radar-scope,
+  .audio-console-indicator,
+  .composer-heading::before {
+    display: none;
+  }
+
+  .bridge-viewport.hero,
+  .bridge-telemetry,
+  .audio-console-panel,
+  .audio-console summary,
+  .audio-mode-grid button {
+    border: 1px solid CanvasText;
+    background: Canvas;
+    color: CanvasText;
+    box-shadow: none;
+    clip-path: none;
+  }
+
+  .audio-mode-grid button.is-active {
+    color: HighlightText;
+    background: Highlight;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep {
+    animation: none !important;
+  }
+
+  .brand-mark,
+  .audio-console summary,
+  .audio-mode-grid button {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+@keyframes radar-sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
