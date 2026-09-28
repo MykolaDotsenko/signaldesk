@@ -1,213 +1,147 @@
 # SignalDesk
 
-### Local-first knowledge workspace for ideas, research notes, and useful sources
+A local-first browser notebook for ideas, research notes, and useful links.
 
-[Open the live demo](https://signaldesk-workspace.vercel.app/)
+[**Open SignalDesk**](https://signaldesk-workspace.vercel.app/) · [Architecture notes](./ARCHITECTURE.md)
 
-[![Quality](https://github.com/MykolaDotsenko/signaldesk/actions/workflows/quality.yml/badge.svg)](https://github.com/MykolaDotsenko/signaldesk/actions/workflows/quality.yml)
-![React](https://img.shields.io/badge/React-19.3-61DAFB?logo=react&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?logo=vite&logoColor=white)
-![Playwright](https://img.shields.io/badge/Playwright-cross--browser-2EAD33?logo=playwright&logoColor=white)
-![Local first](https://img.shields.io/badge/data-local--first-7C9EFF)
+![SignalDesk desktop workspace](./docs/screenshots/signaldesk-desktop.png)
 
-**SignalDesk is a fast, privacy-first React workspace for capturing useful information, organizing it with lightweight structure, and finding it again without another account, backend, analytics layer, or cloud dependency.**
+The point is not to collect more information. It is to make the useful thing easy to capture now — and easy to find again later.
 
-<p align="center">
-  <img
-    src="./docs/screenshots/signaldesk-desktop.png"
-    alt="SignalDesk desktop workspace showing quick capture, workspace metrics, filters, backup controls, and signal cards"
-    width="100%"
-  />
-</p>
+```text
+capture → tag → pin → search → revisit
+```
 
-<p align="center">
-  <strong>Capture → organize → retrieve → refine → revisit</strong>
-</p>
+## What goes into SignalDesk
 
-SignalDesk started as a small React training exercise and was rebuilt into a focused portfolio product with one canonical source of truth, explicit persistence and backup boundaries, accessible interaction states, resilient recovery behavior, and cross-browser automated verification.
+Every signal is one of three things:
 
-## Why this project matters
+- **Note** — something worth remembering
+- **Idea** — something worth developing
+- **Link** — a useful source with context attached
 
-Most note-taking demos stop at CRUD. SignalDesk focuses on the parts that make a small local tool feel trustworthy:
+A signal can have up to six normalized tags, be pinned, marked as a favorite, edited later, or removed with Undo.
 
-- useful information is quick to capture
-- filtering and retrieval stay predictable
-- data survives reloads
-- backup and restore are explicit product features
-- blocked browser storage is surfaced honestly
-- destructive actions have recovery paths
-- keyboard and accessibility flows are treated as first-class behavior
-- the architecture stays proportional to the product instead of becoming framework-heavy
+Search runs across the title, body, type, and tags. The library can also be narrowed to pinned or favorite items and sorted by recent update, creation date, or title.
 
-## At a glance
+## Finding things again is the feature
 
-| Area | Implementation |
-| --- | --- |
-| **Frontend** | React 19.3 + Vite 8.3 |
-| **State** | Reducer-driven canonical post collection + derived selectors |
-| **Persistence** | Versioned localStorage adapter |
-| **Data safety** | Portable JSON export + validated two-step restore |
-| **Accessibility** | Semantic HTML, focus states, reduced motion, forced colors, axe checks |
-| **Responsive UI** | CSS Grid/Flexbox, container queries, fluid typography |
-| **Browser coverage** | Chromium desktop, mobile Chromium, Firefox smoke, WebKit smoke |
-| **Automation** | ESLint, Vitest, Playwright, GitHub Actions |
-| **Runtime services** | None required for the core product |
+SignalDesk keeps one canonical collection of signals.
 
-## Product tour
+Search results, filters, counts, pinned views, favorites, and sorting are derived from that collection rather than stored as parallel state. That keeps the retrieval path predictable: editing one signal does not leave another copy of the same state behind somewhere else.
+
+The current library shows:
+
+- total signals
+- pinned signals
+- favorites
+- unique tags
+
+Pinned items stay ahead of the rest of the selected sort order.
+
+## The backup file has to earn its way in
+
+Export produces a readable JSON file such as:
+
+```text
+signaldesk-backup-2026-09-28.json
+```
+
+Restore is intentionally stricter than export.
+
+Before a backup can replace the current library, SignalDesk checks that:
+
+- the file is valid JSON;
+- it identifies itself as a SignalDesk backup;
+- its backup version is supported;
+- the payload contains an array of signals;
+- every signal can be normalized;
+- signal IDs are unique;
+- the file is no larger than **5 MB**;
+- the backup contains no more than **5,000 signals**.
+
+A valid file is not applied immediately. SignalDesk first shows how many signals are about to be restored and makes it clear that the current library will be replaced.
+
+![SignalDesk library view](./docs/screenshots/signaldesk-library.png)
+
+## Local means local
+
+The working library lives in browser `localStorage`.
+
+The stored payload is versioned, and the loader also understands the earlier array-only format. Invalid stored data does not take down the interface; the app falls back to its starter library instead.
+
+If the browser refuses storage writes, SignalDesk switches to a memory-only state and tells the user that persistence is unavailable. The UI remains usable for the current session, and JSON export is still available as the explicit portability path.
+
+There is no account, server-side database, analytics SDK, or runtime API behind the core workflow.
+
+## A small domain core
+
+```text
+React UI
+   │
+   ├── signal domain
+   │     ├── normalization
+   │     ├── reducer transitions
+   │     ├── search / filter / sort
+   │     └── derived counts
+   │
+   ├── browser storage
+   │     └── versioned local payload
+   │
+   └── backup boundary
+         ├── JSON export
+         ├── validation
+         └── confirmed restore
+```
+
+The domain functions do not depend on the DOM. Persistence and backup parsing sit behind separate boundaries, while the React layer handles interaction and presentation.
+
+That is enough structure for this app: the interesting part is the behavior at the boundaries, not adding more layers.
+
+## Desktop and mobile
 
 <table>
   <tr>
     <td width="66%">
       <img
         src="./docs/screenshots/signaldesk-library.png"
-        alt="SignalDesk filtered favorites library with searchable signal cards"
+        alt="SignalDesk filtered library with signal cards, search, filters, and sorting"
         width="100%"
       />
     </td>
     <td width="34%">
       <img
         src="./docs/screenshots/signaldesk-mobile.png"
-        alt="SignalDesk responsive mobile data-safety and capture experience"
+        alt="SignalDesk mobile workspace with capture and data-safety controls"
         width="100%"
       />
     </td>
   </tr>
-  <tr>
-    <td align="center">
-      <strong>Focused retrieval</strong><br/>
-      Search, sort, pin, and favorite useful signals.
-    </td>
-    <td align="center">
-      <strong>Responsive workflow</strong><br/>
-      Capture and backup remain usable on small screens.
-    </td>
-  </tr>
 </table>
 
-## Core capabilities
+The same workflow is available on small screens: capture, search, filters, editing, backup, and restore do not move into a separate mobile-only experience.
 
-- create and edit notes, ideas, and source entries
-- normalize up to six topic tags per signal
-- search across title, body, type, and tags
-- pinned and favorite views
-- recently updated, newest created, and title sorting
-- derived workspace metrics
-- one-step Undo after deletion
-- versioned local persistence
-- portable JSON backup
-- validated two-step restore
-- explicit session-only warning when browser persistence is unavailable
-- corruption-safe storage recovery
-- keyboard shortcuts for capture and search
-- explicit empty and no-results states
-- responsive desktop, tablet, and mobile layouts
-- reduced-motion and forced-colors support
-- no account, cookies, analytics, or runtime network dependency
+Keyboard shortcuts are also kept simple:
 
-## Architecture
+- `N` — jump to capture
+- `/` — jump to search
+- `Esc` — clear and leave search
 
-```text
-React UI
-  |
-  +--> pure post domain
-  |      ├─ normalization
-  |      ├─ reducer
-  |      ├─ search / filter / sort
-  |      └─ derived stats
-  |
-  +--> storage boundary
-  |      └─ versioned localStorage
-  |
-  +--> backup boundary
-         └─ validated JSON export / restore
-```
+Reduced-motion and forced-colors states are supported.
 
-The app keeps a single canonical post collection. Filters and statistics are derived rather than duplicated, persistence is isolated from domain transitions, and backup parsing fails closed before canonical state is replaced.
+## Stack
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for design rationale and trade-offs.
+**React 19.3 · Vite 8.3 · JavaScript · modern CSS · localStorage**
 
-## Engineering decisions
+Verification uses:
 
-### Local-first by design
-
-The core workflow requires no account or backend. User data stays in the browser unless the user explicitly exports a backup.
-
-### Proportional state management
-
-SignalDesk uses React state and a reducer instead of introducing Redux, global context layers, repositories, dependency injection, or backend abstractions that would add more structure than value.
-
-### Explicit failure handling
-
-If localStorage is blocked or unavailable, SignalDesk does not pretend the write succeeded. The UI switches to a session-only warning and suggests exporting a backup.
-
-### Fail-closed restore boundary
-
-Imported backups are validated before state mutation. Invalid JSON, foreign application identifiers, unsupported versions, malformed signals, duplicate IDs, and excessive payloads are rejected.
-
-## Modern UI engineering
-
-- CSS Grid and Flexbox
-- container queries
-- fluid `clamp()` typography
-- `oklch()` and `color-mix()`
-- registered CSS custom properties
-- backdrop filtering
-- progressive visual enhancement
-- responsive 2-column → single-column layouts
-- reduced-motion support
-- forced-colors support
-
-## Quality evidence
-
-The automated suite currently covers:
-
-- **23 unit/domain/storage/backup tests**
-- **22 browser checks**
-- desktop Chromium
-- mobile Chromium
-- Firefox smoke
-- WebKit smoke
-- create → search → edit → delete → Undo
-- persistence across reloads
-- pinned and favorites filters
-- legacy and corrupted storage recovery
-- export → clear → restore → reload
-- blocked-storage behavior
-- intentionally empty-library behavior
-- keyboard-first workflows
-- axe accessibility checks
-- horizontal overflow checks
-- production builds and linting in CI
-
-```bash
-npm ci
-npm run check
-
-npx playwright install chromium firefox webkit
-npm run test:e2e
-```
-
-## Tech stack
-
-**Runtime**
-- React 19.3
-- React DOM 19.3
-- browser localStorage
-- native `crypto.randomUUID()`
-- semantic HTML
-- modern CSS
-
-**Tooling**
-- Vite 8.3
-- ESLint 10 flat config
-- Vitest 5
-- Playwright 1.63
+- Vitest
+- Playwright
 - axe-core
+- ESLint
 - GitHub Actions
 
-**Deployment**
-- Vercel-compatible root build
-- GitHub Pages-compatible configurable base path
+The browser suite exercises Chromium, mobile Chromium, Firefox, and WebKit flows including create, search, edit, delete/Undo, reload persistence, filters, backup/restore, blocked storage, accessibility, and horizontal overflow.
 
 ## Run locally
 
@@ -218,20 +152,23 @@ npm ci
 npm run dev
 ```
 
-Then open the local Vite URL shown in the terminal.
+For the static checks:
 
-## Product philosophy
+```bash
+npm run check
+```
 
-SignalDesk deliberately avoids becoming an “enterprise architecture demo.”
+For browser tests:
 
-The engineering goal is to keep the implementation understandable while still demonstrating:
+```bash
+npx playwright install chromium firefox webkit
+npm run test:e2e
+```
 
-- deterministic domain transitions
-- one source of truth
-- clear browser boundaries
-- explicit recovery states
-- accessible native controls
-- modern visual polish without a UI runtime
-- automated evidence that the core workflow still works
+## Where it came from
 
-**Minimum architectural noise. Maximum useful behavior.**
+SignalDesk began as a small React exercise.
+
+The useful part of rebuilding it was not making the CRUD screen larger. It was adding the pieces that change whether a local tool feels dependable: retrieval, normalization, versioned persistence, portable backups, restore validation, recovery states, keyboard use, responsive behavior, and browser-level checks.
+
+It is still a deliberately small app. It just takes its data seriously.
