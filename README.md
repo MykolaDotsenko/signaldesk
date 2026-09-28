@@ -10,7 +10,19 @@
 
 The current UI treats the notebook as a **starship bridge archive console**: telemetry-style panels, a physical command-deck frame and optional synthesized interface audio. The theme changes presentation and feedback, not the data model — notes, search, backup/restore and local persistence still work as ordinary browser application features.
 
-Audio can be disabled; critical state is never communicated by sound alone.
+Audio is opt-in and starts muted. Critical state is never communicated by sound alone.
+
+## Bridge audio
+
+The header includes three sound modes:
+
+- **Off** — the default on every new session;
+- **Ambient** — a low procedural engine/bridge bed;
+- **Cinematic** — the ambient bed plus an original evolving space-opera chord layer.
+
+The soundtrack and interaction tones are synthesized in the browser with the Web Audio API. There are no external music files or borrowed franchise themes. Audio only starts after a user chooses a sound mode, so browser autoplay restrictions are respected.
+
+Volume is adjustable, and short cues are used for actions such as save, pin, favorite, delete, Undo and restore.
 
 ```text
 capture → tag → pin → search → revisit
@@ -30,7 +42,7 @@ Search covers title, body, type and tags. Filters and sorting operate over one c
 
 ## Backup and restore
 
-Export is intentionally simple JSON. Restore is stricter.
+Export is simple JSON. Restore is stricter.
 
 Before a file can replace the current library, SignalDesk verifies:
 
