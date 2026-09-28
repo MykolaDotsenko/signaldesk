@@ -78,8 +78,8 @@ export const DataSafety = ({ posts, onRestore }) => {
   return (
     <section className="data-safety" aria-labelledby="data-safety-title">
       <div className="data-safety-copy">
-        <p className="section-kicker">Data safety</p>
-        <h2 id="data-safety-title">Your library stays portable</h2>
+        <p className="section-kicker">Data vault</p>
+        <h2 id="data-safety-title">The archive can leave the station</h2>
         <p>
           SignalDesk stores data locally. Export a JSON backup whenever the library matters,
           and restore it on this or another browser.
