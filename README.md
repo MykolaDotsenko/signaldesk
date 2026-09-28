@@ -2,6 +2,8 @@
 
 ### Local-first knowledge workspace for ideas, research notes, and useful sources
 
+[Open the live demo](https://react-home-work-21-04.vercel.app/)
+
 [![Quality](https://github.com/MykolaDotsenko/signaldesk/actions/workflows/quality.yml/badge.svg)](https://github.com/MykolaDotsenko/signaldesk/actions/workflows/quality.yml)
 ![React](https://img.shields.io/badge/React-19.3-61DAFB?logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?logo=vite&logoColor=white)
