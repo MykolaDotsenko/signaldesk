@@ -47,7 +47,7 @@ Export produces a readable JSON file such as:
 signaldesk-backup-2026-09-28.json
 ```
 
-Restore is intentionally stricter than export.
+Restore is stricter than export.
 
 Before a backup can replace the current library, SignalDesk checks that:
 
@@ -171,4 +171,4 @@ SignalDesk began as a small React exercise.
 
 The useful part of rebuilding it was not making the CRUD screen larger. It was adding the pieces that change whether a local tool feels dependable: retrieval, normalization, versioned persistence, portable backups, restore validation, recovery states, keyboard use, responsive behavior, and browser-level checks.
 
-It is still a deliberately small app. It just takes its data seriously.
+It is still a small app. It just takes its data seriously.
