@@ -178,8 +178,15 @@ export const useShipAudio = () => {
       cinematicStepRef.current += 1;
 
       const now = context.currentTime;
-      const phraseBus = registerBedNode(context.createGain());
-      const filter = registerBedNode(context.createBiquadFilter());
+      const transientNodes = [];
+      const trackTransient = (node) => {
+        registerBedNode(node);
+        transientNodes.push(node);
+        return node;
+      };
+
+      const phraseBus = trackTransient(context.createGain());
+      const filter = trackTransient(context.createBiquadFilter());
 
       phraseBus.gain.setValueAtTime(0.0001, now);
       phraseBus.gain.exponentialRampToValueAtTime(0.055, now + 1.15);
@@ -194,8 +201,8 @@ export const useShipAudio = () => {
       filter.connect(master);
 
       chord.forEach((frequency, index) => {
-        const oscillator = registerBedNode(context.createOscillator());
-        const voiceGain = registerBedNode(context.createGain());
+        const oscillator = trackTransient(context.createOscillator());
+        const voiceGain = trackTransient(context.createGain());
 
         oscillator.type = index === 0 ? "sawtooth" : "triangle";
         oscillator.frequency.value = frequency;
@@ -208,8 +215,8 @@ export const useShipAudio = () => {
         oscillator.stop(now + 6.4);
       });
 
-      const impact = registerBedNode(context.createOscillator());
-      const impactGain = registerBedNode(context.createGain());
+      const impact = trackTransient(context.createOscillator());
+      const impactGain = trackTransient(context.createGain());
       impact.type = "sine";
       impact.frequency.setValueAtTime(58, now);
       impact.frequency.exponentialRampToValueAtTime(38, now + 0.8);
@@ -219,6 +226,13 @@ export const useShipAudio = () => {
       impactGain.connect(master);
       impact.start(now);
       impact.stop(now + 1.2);
+
+      window.setTimeout(() => {
+        transientNodes.forEach((node) => {
+          safeStop(node);
+          bedNodesRef.current.delete(node);
+        });
+      }, 6800);
     },
     [registerBedNode],
   );
