@@ -143,7 +143,7 @@ export const App = () => {
       <main className="workspace">
         <section className="hero" aria-labelledby="hero-title">
           <div>
-            <p className="eyebrow">Local-first knowledge workspace</p>
+            <p className="eyebrow">Local-first research console</p>
             <h1 id="hero-title">
               Keep the useful things.
               <span> Lose the noise.</span>
@@ -176,8 +176,8 @@ export const App = () => {
           <section className="feed-column" aria-labelledby="feed-title">
             <div className="feed-heading">
               <div>
-                <p className="section-kicker">Your signal library</p>
-                <h2 id="feed-title">Everything worth keeping</h2>
+                <p className="section-kicker">Signal archive</p>
+                <h2 id="feed-title">Stored transmissions</h2>
               </div>
               <span className="result-count" aria-live="polite">
                 {visiblePosts.length} {visiblePosts.length === 1 ? "item" : "items"}
