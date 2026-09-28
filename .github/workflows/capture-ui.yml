@@ -1,0 +1,103 @@
+name: Capture SignalDesk UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/capture-ui.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install app
+        run: npm ci
+
+      - name: Install Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.63.0
+          npx playwright install --with-deps chromium
+
+      - name: Build
+        run: npm run build
+
+      - name: Start preview
+        run: |
+          npm run preview -- --host 127.0.0.1 --port 4173 > /tmp/signaldesk-preview.log 2>&1 &
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/signaldesk-preview.log
+          exit 1
+
+      - name: Capture current UI
+        run: |
+          mkdir -p docs/screenshots
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright'
+
+          const browser = await chromium.launch({ headless: true })
+
+          const desktop = await browser.newPage({
+            viewport: { width: 1440, height: 1050 },
+            deviceScaleFactor: 1,
+          })
+          await desktop.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' })
+          await desktop.addInitScript(() => localStorage.clear())
+          await desktop.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' })
+          await desktop.evaluate(() => window.scrollTo(0, 0))
+          await desktop.screenshot({
+            path: 'docs/screenshots/signaldesk-desktop.png',
+            fullPage: true,
+          })
+
+          await desktop.getByRole('button', { name: /^Favorites/ }).click()
+          await desktop.waitForTimeout(80)
+          await desktop.locator('.feed-column').screenshot({
+            path: 'docs/screenshots/signaldesk-library.png',
+          })
+
+          const mobile = await browser.newPage({
+            viewport: { width: 390, height: 844 },
+            deviceScaleFactor: 1,
+          })
+          await mobile.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' })
+          await mobile.addInitScript(() => localStorage.clear())
+          await mobile.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' })
+          await mobile.evaluate(() => window.scrollTo(0, 0))
+          await mobile.screenshot({
+            path: 'docs/screenshots/signaldesk-mobile.png',
+            fullPage: true,
+          })
+
+          await browser.close()
+          NODE
+
+      - name: Commit screenshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/signaldesk-desktop.png docs/screenshots/signaldesk-library.png docs/screenshots/signaldesk-mobile.png
+          if git diff --cached --quiet; then
+            echo "Screenshots unchanged"
+            exit 0
+          fi
+          git commit -m "docs: refresh SignalDesk screenshots"
+          git push
