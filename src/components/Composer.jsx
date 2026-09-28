@@ -72,8 +72,8 @@ export const Composer = forwardRef(function Composer(
       <div className="card-glow" aria-hidden="true" />
       <div className="composer-heading">
         <div>
-          <p className="section-kicker">{editingPost ? "Editing signal" : "Quick capture"}</p>
-          <h2>{editingPost ? "Refine the useful bit" : "Save it before it disappears"}</h2>
+          <p className="section-kicker">{editingPost ? "Signal revision" : "Incoming signal"}</p>
+          <h2>{editingPost ? "Refine the useful bit" : "Log it while the context is fresh"}</h2>
         </div>
         <span className="local-badge">local</span>
       </div>
