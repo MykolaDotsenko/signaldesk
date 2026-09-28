@@ -1,8 +1,8 @@
 const STAT_ITEMS = [
-  ["total", "Signals", "All captured items"],
-  ["pinned", "Pinned", "High-attention items"],
-  ["favorites", "Favorites", "Worth revisiting"],
-  ["tags", "Topics", "Distinct tags"],
+  ["total", "Signals", "Archive count"],
+  ["pinned", "Pinned", "Priority channel"],
+  ["favorites", "Favorites", "Return queue"],
+  ["tags", "Topics", "Indexed tags"],
 ];
 
 export const StatsStrip = ({ stats }) => (
