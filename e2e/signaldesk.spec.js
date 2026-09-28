@@ -138,3 +138,27 @@ test("does not overflow horizontally on the tested viewport", async ({ page }) =
   );
   expect(hasOverflow).toBe(false);
 });
+
+
+test("keeps bridge audio opt-in and switches between original sound modes", async ({ page }) => {
+  const audioConsole = page.locator(".audio-console");
+  await expect(audioConsole).toHaveAttribute("data-mode", "off");
+
+  await audioConsole.locator("summary").click();
+
+  const ambient = page.getByRole("button", { name: "Ambient", exact: true });
+  const cinematic = page.getByRole("button", { name: "Cinematic", exact: true });
+  const off = page.getByRole("button", { name: "Off", exact: true });
+
+  await ambient.click();
+  await expect(audioConsole).toHaveAttribute("data-mode", "ambient");
+  await expect(ambient).toHaveAttribute("aria-pressed", "true");
+
+  await cinematic.click();
+  await expect(audioConsole).toHaveAttribute("data-mode", "cinematic");
+  await expect(cinematic).toHaveAttribute("aria-pressed", "true");
+
+  await off.click();
+  await expect(audioConsole).toHaveAttribute("data-mode", "off");
+  await expect(off).toHaveAttribute("aria-pressed", "true");
+});
