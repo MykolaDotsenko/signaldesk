@@ -9,7 +9,7 @@ export const AppHeader = ({ onNewPost, persistenceStatus }) => {
         </span>
         <span>
           <strong>SignalDesk</strong>
-          <small>Personal signal workspace</small>
+          <small>Local research console</small>
         </span>
       </a>
 
@@ -23,7 +23,7 @@ export const AppHeader = ({ onNewPost, persistenceStatus }) => {
         </span>
         <button className="button button-primary button-compact" type="button" onClick={onNewPost}>
           <span aria-hidden="true">＋</span>
-          New post
+          New signal
         </button>
       </div>
     </header>
